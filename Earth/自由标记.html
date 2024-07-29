@@ -18,7 +18,7 @@ https://docs.mapbox.com/mapbox-gl-js/guides
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error智慧地球</title>
+    <title>Error自由标记</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
     <!-- 搜索依赖库 -->
@@ -65,13 +65,14 @@ https://docs.mapbox.com/mapbox-gl-js/guides
             padding: 0 10px;
             background-color: white;
             border-radius: 4px;
-            cursor: pointer;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         #btn:hover {
             box-shadow: 0px 0px 14px #ffffff;
         }
+
 
         #btn2 {
             position: absolute;
@@ -80,13 +81,14 @@ https://docs.mapbox.com/mapbox-gl-js/guides
             padding: 0 10px;
             background-color: white;
             border-radius: 4px;
-            cursor: pointer;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         #btn2:hover {
             box-shadow: 0px 0px 14px #ffffff;
         }
+
 
         #btn3 {
             position: absolute;
@@ -95,41 +97,11 @@ https://docs.mapbox.com/mapbox-gl-js/guides
             padding: 0 10px;
             background-color: white;
             border-radius: 4px;
-            cursor: pointer;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         #btn3:hover {
-            box-shadow: 0px 0px 14px #ffffff;
-        }
-
-        #btn4 {
-            position: absolute;
-            top: 126px;
-            left: 10px;
-            padding: 0 10px;
-            background-color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        #btn4:hover {
-            box-shadow: 0px 0px 14px #ffffff;
-        }
-
-        #btn5 {
-            position: absolute;
-            top: 155px;
-            left: 10px;
-            padding: 0 10px;
-            background-color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        #btn5:hover {
             box-shadow: 0px 0px 14px #ffffff;
         }
     </style>
@@ -148,50 +120,29 @@ https://docs.mapbox.com/mapbox-gl-js/guides
         <option value="navigation-night-v1">Navigation Night</option>
         <option value="navigation-day-v1">Navigation Day</option>
     </select>
-    <button id="btn" onclick="Fly()">Fly</button>
+    <button id="btn" onclick="deleteAll()">Delete All</button>
     <button id="btn2" onclick="Back()">Back</button>
     <button id="btn3" onclick="Direction()">Direction</button>
-    <button id="btn4" onclick="Marker()">Marker</button>
-    <button id="btn5" onclick="Warning()">Warning</button>
     <script> // js代码
         let token = "pk.eyJ1IjoiY2hlbmdjaGFvODg2NiIsImEiOiJjbGhzcWowMHUwYTNyM2VwNXZhaXhjd3Q4In0.FEh2q7sEW88Z1B5GcK_TDg"; // 申请的token秘钥
         mapboxgl.accessToken = token; // 设置accessToken
         const map = new mapboxgl.Map({ // 创建地图对象
             container: "map", // 地图挂载到哪里
             style: "mapbox://styles/mapbox/dark-v11", // 地图样式
-            center: [102.66, 24.89], // 地图中心点
+            center: [114.3, 30.5], // 地图中心点
             projection: "globe", // 地图投影
-            zoom: 2, // 地图缩放级别
+            zoom: 10, // 地图缩放级别
         });
 
-        let flag = true; // 旋转标志
-        function rotate() { // 定义旋转函数
-            let center = map.getCenter(); // 获取当前中心点
-            center.lng += 10; // 向东移动10度
-
-            if (flag) { // 旋转标志为true，则向东移动10度
-                map.easeTo({ // 使用缓动动画效果旋转地图
-                    center: center, // 新的中心点
-                    duration: 2000, // 动画持续时间
-                    easing: (t) => t, // 动画缓动函数，这里使用线性函数
-                });
-            }
-        }
-        rotate(); // 调用旋转函数
-
-        map.on("moveend", rotate); // 地图移动结束后，重新调用rotate函数 使其连续转动
-        map.on("click", () => {
-            flag = !flag; // 点击旋转标志反转
-            if (flag) {
-                rotate(); // 旋转标志为true，则调用rotate函数
-            } else {
-                map.stop(); // 旋转标志为false，则停止动画
-            }
+        let markers = []; // 标记数组
+        map.on("click", (e) => {
+            const marker = new mapboxgl.Marker({
+                draggable: true, // 标记是否可拖动
+                anchgor: "top", // 标记锚点
+            }); // 创建标记对象
+            markers.push(marker); // 标记数组添加标记对象
+            marker.setLngLat(e.lngLat).addTo(map); // 设置标记的经纬度并添加到地图上
         });
-
-        sel.onchange = (e) => { // 监听下拉框选择事件
-            map.setStyle("mapbox://styles/mapbox/" + e.target.value); // 设置地图样式
-        };
 
         // 地图样式加载完成事件
         map.on("style.load", () => { // 地图样式加载完成事件回调函数
@@ -202,6 +153,10 @@ https://docs.mapbox.com/mapbox-gl-js/guides
                 "space-color": "black", // 大气层空间颜色
             });
         });
+
+        sel.onchange = (e) => { // 监听下拉框选择事件
+            map.setStyle("mapbox://styles/mapbox/" + e.target.value); // 设置地图样式
+        };
 
         const geocoder = new MapboxGeocoder({
             accessToken: token,
@@ -222,40 +177,19 @@ https://docs.mapbox.com/mapbox-gl-js/guides
         map.addControl(new mapboxgl.ZoomControl()); // 添加缩放控件
         map.addControl(new mapboxgl.GeocoderControl()); // 添加地理编码控件
 
-        function Fly() { // 视角复原
-            // 视角漫游 飞行
-            map.flyTo({
-                center: [116.521, 35.414], // 地图目标中心点
-                zoom: 12, // 地图缩放级别
-                speed: 1, // 飞行速度
-                pitch: 80, // 俯仰角度
-                bearing: 90, // 航向角度
+        function deleteAll(e) {
+            markers.forEach((marker) => {
+                marker.remove();
             });
-            flag = false; // 旋转标志复位
+            markers = []; // 标记数组清空
         }
 
-        function Back() { // 视角复原
-            // 视角漫游 飞行
-            map.flyTo({
-                center: [114.3, 30.5], // 地图目标中心点
-                zoom: 2, // 地图缩放级别
-                speed: 1, // 飞行速度
-                pitch: 0, // 俯仰角度
-                bearing: 0, // 航向角度
-            });
-            flag = true; // 旋转标志复位
+        function Back() {
+            window.location.href = "./智慧地球.html";
         }
 
         function Direction() {
             window.location.href = "./智慧导航.html";
-        }
-
-        function Marker() {
-            window.location.href = "./自由标记.html";
-        }
-
-        function Warning() {
-            alert("Error Chtholly提醒您：\n在进行定位、导航、搜索等操作时，请确保您已经停止了地球的自转，地球自转可以通过点击屏幕任意空白区域来停止或重新运转。");
         }
     </script>
 </body>

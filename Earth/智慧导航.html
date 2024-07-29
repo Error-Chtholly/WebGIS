@@ -18,14 +18,14 @@ https://docs.mapbox.com/mapbox-gl-js/guides
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error智慧地球</title>
+    <title>Error智慧导航</title>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
-    <!-- 搜索依赖库 -->
+    <!-- 导航依赖库 -->
     <script
-        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.3.1/mapbox-gl-directions.js"></script>
     <link rel="stylesheet"
-        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.3.1/mapbox-gl-directions.css"
         type="text/css">
     <style>
         * {
@@ -47,89 +47,46 @@ https://docs.mapbox.com/mapbox-gl-js/guides
             /* 宽度和高度设置为100%，可以铺满整个视窗 */
         }
 
-        #sel {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            transition: all 0.3s ease;
-        }
-
-        #sel:hover {
-            box-shadow: 0px 0px 14px #ffffff;
-        }
-
         #btn {
             position: absolute;
-            top: 39px;
+            bottom: 72px;
             left: 10px;
             padding: 0 10px;
             background-color: white;
             border-radius: 4px;
-            cursor: pointer;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         #btn:hover {
             box-shadow: 0px 0px 14px #ffffff;
         }
 
+
         #btn2 {
             position: absolute;
-            top: 68px;
+            bottom: 103px;
             left: 10px;
             padding: 0 10px;
             background-color: white;
             border-radius: 4px;
-            cursor: pointer;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         #btn2:hover {
             box-shadow: 0px 0px 14px #ffffff;
         }
 
-        #btn3 {
+
+        #sel {
             position: absolute;
-            top: 97px;
+            bottom: 134px;
             left: 10px;
-            padding: 0 10px;
-            background-color: white;
-            border-radius: 4px;
-            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        #btn3:hover {
-            box-shadow: 0px 0px 14px #ffffff;
-        }
-
-        #btn4 {
-            position: absolute;
-            top: 126px;
-            left: 10px;
-            padding: 0 10px;
-            background-color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        #btn4:hover {
-            box-shadow: 0px 0px 14px #ffffff;
-        }
-
-        #btn5 {
-            position: absolute;
-            top: 155px;
-            left: 10px;
-            padding: 0 10px;
-            background-color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        #btn5:hover {
+        #sel:hover {
             box-shadow: 0px 0px 14px #ffffff;
         }
     </style>
@@ -148,45 +105,17 @@ https://docs.mapbox.com/mapbox-gl-js/guides
         <option value="navigation-night-v1">Navigation Night</option>
         <option value="navigation-day-v1">Navigation Day</option>
     </select>
-    <button id="btn" onclick="Fly()">Fly</button>
-    <button id="btn2" onclick="Back()">Back</button>
-    <button id="btn3" onclick="Direction()">Direction</button>
-    <button id="btn4" onclick="Marker()">Marker</button>
-    <button id="btn5" onclick="Warning()">Warning</button>
+    <button id="btn2" onclick="Marker()">Marker</button>
+    <button id="btn" onclick="Back()">Back</button>
     <script> // js代码
         let token = "pk.eyJ1IjoiY2hlbmdjaGFvODg2NiIsImEiOiJjbGhzcWowMHUwYTNyM2VwNXZhaXhjd3Q4In0.FEh2q7sEW88Z1B5GcK_TDg"; // 申请的token秘钥
         mapboxgl.accessToken = token; // 设置accessToken
         const map = new mapboxgl.Map({ // 创建地图对象
             container: "map", // 地图挂载到哪里
             style: "mapbox://styles/mapbox/dark-v11", // 地图样式
-            center: [102.66, 24.89], // 地图中心点
+            center: [116.521, 35.414], // 地图中心点
             projection: "globe", // 地图投影
-            zoom: 2, // 地图缩放级别
-        });
-
-        let flag = true; // 旋转标志
-        function rotate() { // 定义旋转函数
-            let center = map.getCenter(); // 获取当前中心点
-            center.lng += 10; // 向东移动10度
-
-            if (flag) { // 旋转标志为true，则向东移动10度
-                map.easeTo({ // 使用缓动动画效果旋转地图
-                    center: center, // 新的中心点
-                    duration: 2000, // 动画持续时间
-                    easing: (t) => t, // 动画缓动函数，这里使用线性函数
-                });
-            }
-        }
-        rotate(); // 调用旋转函数
-
-        map.on("moveend", rotate); // 地图移动结束后，重新调用rotate函数 使其连续转动
-        map.on("click", () => {
-            flag = !flag; // 点击旋转标志反转
-            if (flag) {
-                rotate(); // 旋转标志为true，则调用rotate函数
-            } else {
-                map.stop(); // 旋转标志为false，则停止动画
-            }
+            zoom: 10, // 地图缩放级别
         });
 
         sel.onchange = (e) => { // 监听下拉框选择事件
@@ -203,18 +132,17 @@ https://docs.mapbox.com/mapbox-gl-js/guides
             });
         });
 
-        const geocoder = new MapboxGeocoder({
-            accessToken: token,
-            mapboxgl: mapboxgl,
-            placeholder: "请输入搜索地址关键字",
-        });
-        map.addControl(geocoder, "top-right"); // 添加搜索功能
         const attr = new mapboxgl.AttributionControl({ // 添加版权信息
             compact: true,
             customAttribution: ["All rights reserved by Error Chtholly."],
         });
         map.addControl(attr, "bottom-right"); // 位置可以是top-left, top-right, bottom-left, bottom-right
-
+        // 导航控件
+        const directions = new MapboxDirections({
+            accessToken: token,
+        });
+        map.addControl(directions, "top-left"); // 添加导航功能
+        // 其他控件
         map.addControl(new mapboxgl.NavigationControl()); // 添加导航控件
         map.addControl(new mapboxgl.GeolocateControl()); // 添加定位控件
         map.addControl(new mapboxgl.ScaleControl()); // 添加比例尺控件
@@ -222,40 +150,12 @@ https://docs.mapbox.com/mapbox-gl-js/guides
         map.addControl(new mapboxgl.ZoomControl()); // 添加缩放控件
         map.addControl(new mapboxgl.GeocoderControl()); // 添加地理编码控件
 
-        function Fly() { // 视角复原
-            // 视角漫游 飞行
-            map.flyTo({
-                center: [116.521, 35.414], // 地图目标中心点
-                zoom: 12, // 地图缩放级别
-                speed: 1, // 飞行速度
-                pitch: 80, // 俯仰角度
-                bearing: 90, // 航向角度
-            });
-            flag = false; // 旋转标志复位
-        }
-
-        function Back() { // 视角复原
-            // 视角漫游 飞行
-            map.flyTo({
-                center: [114.3, 30.5], // 地图目标中心点
-                zoom: 2, // 地图缩放级别
-                speed: 1, // 飞行速度
-                pitch: 0, // 俯仰角度
-                bearing: 0, // 航向角度
-            });
-            flag = true; // 旋转标志复位
-        }
-
-        function Direction() {
-            window.location.href = "./智慧导航.html";
-        }
-
         function Marker() {
             window.location.href = "./自由标记.html";
         }
 
-        function Warning() {
-            alert("Error Chtholly提醒您：\n在进行定位、导航、搜索等操作时，请确保您已经停止了地球的自转，地球自转可以通过点击屏幕任意空白区域来停止或重新运转。");
+        function Back() {
+            window.location.href = "./智慧地球.html";
         }
     </script>
 </body>
